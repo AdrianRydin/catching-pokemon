@@ -1,0 +1,13 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Ser till så att bilderna får korrekt storlek och deras rörelse animeras */
+/* När ni sätter intervallen efter vilken pokemonen får sin nya position bör den intervallen överensstämma med tiden här. 3s. */
+img {
+    width: 300px;
+    transition: all 3s linear;
+}
+
