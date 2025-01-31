@@ -7,6 +7,7 @@ const playerBoy = document.getElementById("boy");
 const playerGirl = document.getElementById("girl");
 const music = document.getElementById("pokemonMusic");
 const welcomeText = document.getElementById("welcomeText");
+const playAgainBtn = document.getElementById("playAgainBtn");
 
 const formBtn = document.getElementById("form");
 const audio = document.querySelector("audio");
@@ -42,10 +43,20 @@ formBtn.addEventListener("submit", (event) => {
     log("de e true");
     audio.volume = 0.005;
     audio.play();
+    oGameData.startTimeInMilliseconds();
+    log(oGameData.startTime);
   } else {
     log("de e false");
   }
 });
+
+playAgainBtn.addEventListener("click", () => {
+  oGameData.endTimeInMilliseconds();
+  log(oGameData.endTime);
+  let totalTimeM = oGameData.nmbrOfMilliseconds();
+  log(parseInt(totalTimeM));
+});
+
 // Slumpa fram 10 stycken pokemon från assets och visa de på skärmen, pokemon har bredd och höjd 300px
 
 // Slumpa fram en random position var 3 sekunder, och ge varje individuell pokemon en egen position.
