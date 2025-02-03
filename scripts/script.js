@@ -12,6 +12,7 @@ const playAgainBtn = document.getElementById("playAgainBtn");
 const formBtn = document.getElementById("form");
 const audio = document.querySelector("audio");
 
+let totalTimeM = oGameData.nmbrOfMilliseconds();
 // Validering av formulär, age, gender, name
 // Om validering misslyckas, meddela och visa vart det gick fel.
 function validateForm() {
@@ -44,7 +45,7 @@ formBtn.addEventListener("submit", (event) => {
     audio.volume = 0.005;
     audio.play();
     oGameData.startTimeInMilliseconds();
-    log(oGameData.startTime);
+    log(oGameData.beginning);
   } else {
     log("de e false");
   }
@@ -52,8 +53,8 @@ formBtn.addEventListener("submit", (event) => {
 
 playAgainBtn.addEventListener("click", () => {
   oGameData.endTimeInMilliseconds();
-  log(oGameData.endTime);
-  let totalTimeM = oGameData.nmbrOfMilliseconds();
+  log(oGameData.ending);
+
   log(parseInt(totalTimeM));
 });
 
