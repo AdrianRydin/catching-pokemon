@@ -12,6 +12,10 @@ const playAgainBtn = document.getElementById("playAgainBtn");
 const formBtn = document.getElementById("form");
 const audio = document.querySelector("audio");
 
+
+const randomPokemonNumbers = [];
+
+
 const totalTime = oGameData.nmbrOfMilliseconds();
 
 // Validering av formulär, age, gender, name
@@ -56,7 +60,9 @@ playAgainBtn.addEventListener("click", () => {
   oGameData.endTimeInMilliseconds();
   log(oGameData.ending);
   let totalTimeM = oGameData.nmbrOfMilliseconds();
+
   log(totalTimeM);
+
 });
 
 function localStorageHighScore() {
@@ -103,6 +109,30 @@ function localStorageHighScore() {
 // vid hover event på pokeball, återställ bilden till den originala pokemon
 
 // Om alla bilder är pokeballs, sluta spelet. Stoppa timern.
+let pokemonElement = ['ball.webp','ball.webp','ball.webp','ball.webp']
+
+checkIfAllArePokeball();
+
+function checkIfAllArePokeball () {
+  for(let i = 0; i < randomPokemonNumbers.length; i++){
+    if(randomPokemonNumbers.every(img => img === 'ball.webp')) {
+      console.log('alla är bollar')
+      return true
+    } else{
+      log('spelet fortsätter')
+    }
+  }
+
+}
+stopGame()
+
+function stopGame (){
+  if (checkIfAllArePokeball()){
+    oGameData.endTimeInMilliseconds();
+    log('spelet är klart')
+  } 
+}
+
 
 // Spara tiden som spelet hade med key HighScore i localStorage, och jämför med HighScore array, och ta in den i arrayen om tiden är mindre än de första 10.
 
