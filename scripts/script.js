@@ -62,9 +62,42 @@ playAgainBtn.addEventListener("click", () => {
 
 // Slumpa fram en random position var 3 sekunder, och ge varje individuell pokemon en egen position.
 
-// vid hover event på pokemon, byt bilden från pokemon till pokeboll
+// Vid hover event på pokemon, byt bilden från pokemon till pokeboll
+// Pokémon förblir fångad (ingen återställning vid mouseout)
 
-// vid hover event på pokeball, återställ bilden till den originala pokemon
+function generatePokemon() {
+  const gameField = document.getElementById('gameField');
+  const randomPokemonNumbers = getRandomPokemonNum();
+  oGameData.pokemonNumbers = randomPokemonNumbers;
+  const intervalIds = [];
+
+  for (const pokemonNumber of randomPokemonNumbers) {
+    const pokemon = createPokemonElement(pokemonNumber);
+    pokemon.src = `./assets/pokemons/${String(pokemonNumber).padStart(3, '0')}.png`; // Ladda Pokémon-bild
+    gameField.appendChild(pokemon);
+
+    const intervalId = startPokemonMovement(pokemon);
+    intervalIds.push(intervalId);
+
+    // Hover-event: Byt till pokéboll, markera som fångad och stoppa rörelsen
+    pokemon.addEventListener("mouseover", () => {
+      if (!pokemon.classList.contains("caught")) { 
+        pokemon.dataset.originalSrc = pokemon.src;        // Spara originalbilden
+        pokemon.src = "./assets/ball.webp";               // Byt till pokéboll
+        pokemon.classList.add("caught");                  // Markera som fångad
+        oGameData.nmbrOfCaughtPokemons++;                 // Räkna fångade Pokémon
+
+        clearInterval(intervalId);                        // Stoppa Pokémonens rörelse
+
+        // Kolla om alla Pokémon är fångade
+        if (oGameData.nmbrOfCaughtPokemons === 10) {
+          endGame(); // Avsluta spelet
+        }
+      }
+    });
+  }
+  oGameData.pokemonIntervals = intervalIds;
+}
 
 // Om alla bilder är pokeballs, sluta spelet. Stoppa timern.
 
