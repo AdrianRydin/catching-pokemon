@@ -11,6 +11,7 @@ const playAgainBtn = document.getElementById("playAgainBtn");
 
 const formBtn = document.getElementById("form");
 const audio = document.querySelector("audio");
+const highScoreView = document.getElementById("highScore");
 
 
 const randomPokemonNumbers = [];
@@ -101,8 +102,67 @@ function localStorageHighScore() {
 }
 
 // Slumpa fram 10 stycken pokemon från assets och visa de på skärmen, pokemon har bredd och höjd 300px
+//make an array of pokemon numbers
+function getPokemonNum() {
+  const pokemonNumbers = [];
+  for (let i = 1; i <= 151; i++) {
+    const number = String(i).padStart(3, "0");
+    pokemonNumbers.push(number);
+  }
+  return pokemonNumbers;
+}
+//not sure about this, but hopefully it gets 10 random pokemons
+function getRandomPokemonNum() {
+  const allPokemonNumbers = getPokemonNum();
+  const randomNumbers = [];
+  while (randomNumbers.length < 10) {
+    const randomIndex = Math.floor(Math.random() * allPokemonNumbers.length);
+    const number = allPokemonNumbers.splice(randomIndex, 1)[0];
+    randomNumbers.push(number);
+  }
+  return randomNumbers;
+}
+//create one random pokemon eelement
+function createPokemonElement(pokemonNumber) {
+  const pokemon = document.createElement("img");
+  pokemon.src = `./assets/pokemons/${pokemonNumber}.png`;
+  pokemon.style.position = "absolute";
+  return pokemon;
+}
 
 // Slumpa fram en random position var 3 sekunder, och ge varje individuell pokemon en egen position.
+
+function updatePokemonPosition(pokemon) {
+  pokemon.style.left = `${oGameData.getLeftPosition()}px`;
+  pokemon.style.top = `${oGameData.getTopPosition()}px`;
+}
+
+function startPokemonMovement(pokemon) {
+  const intervalId = setInterval(() => {
+    updatePokemonPosition(pokemon);
+  }, 3000);
+  return intervalId;
+}
+//display pokemons
+
+function generatePokemon() {
+  const gameField = document.getElementById("gameField");
+  const randomPokemonNumbers = getRandomPokemonNum();
+  oGameData.pokemonNumbers = randomPokemonNumbers;
+  const intervalIds = [];
+  //ddisplay each Pokemon
+  for (const pokemonNumber of randomPokemonNumbers) {
+    const pokemon = createPokemonElement(pokemonNumber);
+    gameField.appendChild(pokemon);
+    const intervalId = startPokemonMovement(pokemon);
+    intervalIds.push(intervalId);
+  }
+  oGameData.pokemonIntervals = intervalIds;
+
+  formBtn.style.display = "none";
+  highScoreView.style.display = "none";
+}
+generatePokemon();
 
 // vid hover event på pokemon, byt bilden från pokemon till pokeboll
 
