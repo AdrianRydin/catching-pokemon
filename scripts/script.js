@@ -11,8 +11,14 @@ const playAgainBtn = document.getElementById("playAgainBtn");
 
 const formBtn = document.getElementById("form");
 const audio = document.querySelector("audio");
+const highScoreView = document.getElementById("highScore");
 
-let totalTimeM = oGameData.nmbrOfMilliseconds();
+
+const randomPokemonNumbers = [];
+
+
+const totalTime = oGameData.nmbrOfMilliseconds();
+
 // Validering av formulär, age, gender, name
 // Om validering misslyckas, meddela och visa vart det gick fel.
 function validateForm() {
@@ -54,16 +60,112 @@ formBtn.addEventListener("submit", (event) => {
 playAgainBtn.addEventListener("click", () => {
   oGameData.endTimeInMilliseconds();
   log(oGameData.ending);
+  let totalTimeM = oGameData.nmbrOfMilliseconds();
 
-  log(parseInt(totalTimeM));
+  log(totalTimeM);
+
 });
 
+function localStorageHighScore() {
+  const highScore = JSON.parse(localStorage.getItem("highScore")) || [];
+
+  if (!localStorage.getItem("highScore")) {
+    localStorage.setItem("highScore", JSON.stringify(highScore));
+    log("Array stored in LS");
+  } else {
+    log("Array already exists in LS");
+  }
+
+  if (typeof totalTimeM === "number") {
+    if (highScore.length === 0) {
+      highScore.push(totalTimeM);
+      log("First score added:", highScore);
+    } else {
+      let inserted = false;
+      for (let i = 0; i < highScore.length; i++) {
+        if (totalTimeM < highScore[i]) {
+          highScore.splice(i, 0, totalTimeM);
+          inserted = true;
+          break;
+        }
+      }
+      if (!inserted) {
+        highScore.push(totalTimeM);
+      }
+    }
+    localStorage.setItem("highScore", JSON.stringify(highScore));
+
+    log("Updated LocalStorage:", highScore);
+  } else {
+    log("TotalTimeM is not a number");
+  }
+}
+
 // Slumpa fram 10 stycken pokemon från assets och visa de på skärmen, pokemon har bredd och höjd 300px
+//make an array of pokemon numbers
+function getPokemonNum() {
+  const pokemonNumbers = [];
+  for (let i = 1; i <= 151; i++) {
+    const number = String(i).padStart(3, "0");
+    pokemonNumbers.push(number);
+  }
+  return pokemonNumbers;
+}
+//not sure about this, but hopefully it gets 10 random pokemons
+function getRandomPokemonNum() {
+  const allPokemonNumbers = getPokemonNum();
+  const randomNumbers = [];
+  while (randomNumbers.length < 10) {
+    const randomIndex = Math.floor(Math.random() * allPokemonNumbers.length);
+    const number = allPokemonNumbers.splice(randomIndex, 1)[0];
+    randomNumbers.push(number);
+  }
+  return randomNumbers;
+}
+//create one random pokemon eelement
+function createPokemonElement(pokemonNumber) {
+  const pokemon = document.createElement("img");
+  pokemon.src = `./assets/pokemons/${pokemonNumber}.png`;
+  pokemon.style.position = "absolute";
+  return pokemon;
+}
 
 // Slumpa fram en random position var 3 sekunder, och ge varje individuell pokemon en egen position.
 
-// Vid hover event på pokemon, byt bilden från pokemon till pokeboll
-// Pokémon förblir fångad (ingen återställning vid mouseout)
+
+function updatePokemonPosition(pokemon) {
+  pokemon.style.left = `${oGameData.getLeftPosition()}px`;
+  pokemon.style.top = `${oGameData.getTopPosition()}px`;
+}
+
+function startPokemonMovement(pokemon) {
+  const intervalId = setInterval(() => {
+    updatePokemonPosition(pokemon);
+  }, 3000);
+  return intervalId;
+}
+//display pokemons
+
+function generatePokemon() {
+  const gameField = document.getElementById("gameField");
+  const randomPokemonNumbers = getRandomPokemonNum();
+  oGameData.pokemonNumbers = randomPokemonNumbers;
+  const intervalIds = [];
+  //ddisplay each Pokemon
+  for (const pokemonNumber of randomPokemonNumbers) {
+    const pokemon = createPokemonElement(pokemonNumber);
+    gameField.appendChild(pokemon);
+    const intervalId = startPokemonMovement(pokemon);
+    intervalIds.push(intervalId);
+  }
+  oGameData.pokemonIntervals = intervalIds;
+
+  formBtn.style.display = "none";
+  highScoreView.style.display = "none";
+}
+generatePokemon();
+
+
 
 function generatePokemon() {
   const gameField = document.getElementById('gameField');
@@ -100,9 +202,31 @@ function generatePokemon() {
 }
 
 // Om alla bilder är pokeballs, sluta spelet. Stoppa timern.
+let pokemonElement = ['ball.webp','ball.webp','ball.webp','ball.webp']
+
+checkIfAllArePokeball();
+
+function checkIfAllArePokeball () {
+  for(let i = 0; i < randomPokemonNumbers.length; i++){
+    if(randomPokemonNumbers.every(img => img === 'ball.webp')) {
+      console.log('alla är bollar')
+      return true
+    } else{
+      log('spelet fortsätter')
+    }
+  }
+
+}
+stopGame()
+
+function stopGame (){
+  if (checkIfAllArePokeball()){
+    oGameData.endTimeInMilliseconds();
+    log('spelet är klart')
+  } 
+}
+
 
 // Spara tiden som spelet hade med key HighScore i localStorage, och jämför med HighScore array, och ta in den i arrayen om tiden är mindre än de första 10.
-
-// vänd på arrayen, så att första värdet är [9], och loopa igenom tills tiden som sparades i spelet, inte är mindre än nästa värde.
 
 // Visa HighScore-vyn och ha en knapp som anropar init()
