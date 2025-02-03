@@ -12,7 +12,8 @@ const playAgainBtn = document.getElementById("playAgainBtn");
 const formBtn = document.getElementById("form");
 const audio = document.querySelector("audio");
 
-let totalTimeM = oGameData.nmbrOfMilliseconds();
+const totalTime = oGameData.nmbrOfMilliseconds();
+
 // Validering av formulär, age, gender, name
 // Om validering misslyckas, meddela och visa vart det gick fel.
 function validateForm() {
@@ -54,9 +55,44 @@ formBtn.addEventListener("submit", (event) => {
 playAgainBtn.addEventListener("click", () => {
   oGameData.endTimeInMilliseconds();
   log(oGameData.ending);
-
-  log(parseInt(totalTimeM));
+  let totalTimeM = oGameData.nmbrOfMilliseconds();
+  log(totalTimeM);
 });
+
+function localStorageHighScore() {
+  const highScore = JSON.parse(localStorage.getItem("highScore")) || [];
+
+  if (!localStorage.getItem("highScore")) {
+    localStorage.setItem("highScore", JSON.stringify(highScore));
+    log("Array stored in LS");
+  } else {
+    log("Array already exists in LS");
+  }
+
+  if (typeof totalTimeM === "number") {
+    if (highScore.length === 0) {
+      highScore.push(totalTimeM);
+      log("First score added:", highScore);
+    } else {
+      let inserted = false;
+      for (let i = 0; i < highScore.length; i++) {
+        if (totalTimeM < highScore[i]) {
+          highScore.splice(i, 0, totalTimeM);
+          inserted = true;
+          break;
+        }
+      }
+      if (!inserted) {
+        highScore.push(totalTimeM);
+      }
+    }
+    localStorage.setItem("highScore", JSON.stringify(highScore));
+
+    log("Updated LocalStorage:", highScore);
+  } else {
+    log("TotalTimeM is not a number");
+  }
+}
 
 // Slumpa fram 10 stycken pokemon från assets och visa de på skärmen, pokemon har bredd och höjd 300px
 
@@ -69,7 +105,5 @@ playAgainBtn.addEventListener("click", () => {
 // Om alla bilder är pokeballs, sluta spelet. Stoppa timern.
 
 // Spara tiden som spelet hade med key HighScore i localStorage, och jämför med HighScore array, och ta in den i arrayen om tiden är mindre än de första 10.
-
-// vänd på arrayen, så att första värdet är [9], och loopa igenom tills tiden som sparades i spelet, inte är mindre än nästa värde.
 
 // Visa HighScore-vyn och ha en knapp som anropar init()
