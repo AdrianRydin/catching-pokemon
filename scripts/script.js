@@ -116,7 +116,7 @@ function generatePokemon() {
   for (const pokemonNumber of randomPokemonNumbers) {
     const pokemon = createPokemonElement(pokemonNumber);
     gameField.appendChild(pokemon);
-
+    updatePokemonPosition(pokemon);
     startPokemonMovement(pokemon);
 
     // Hover-event: Byt till pokéboll, markera som fångad och stoppa rörelsen
@@ -136,6 +136,10 @@ function generatePokemon() {
         } else {
           log("spelet fortsätter");
         }
+      } else if (pokemon.classList.contains("caught")) {
+        pokemon.src = pokemon.dataset.originalSrc;
+        pokemon.classList.remove("caught");
+        oGameData.nmbrOfCaughtPokemons--;
       }
     });
   }
