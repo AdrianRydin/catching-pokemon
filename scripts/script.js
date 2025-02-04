@@ -1,6 +1,6 @@
 const log = (msg) => console.log(msg);
 
-// I denna fil skriver ni all er kod
+// Globala variabler
 const playerName = document.getElementById("nick");
 const playerAge = document.getElementById("age");
 const playerBoy = document.getElementById("boy");
@@ -8,21 +8,19 @@ const playerGirl = document.getElementById("girl");
 const music = document.getElementById("pokemonMusic");
 const welcomeText = document.getElementById("welcomeText");
 const playAgainBtn = document.getElementById("playAgainBtn");
-
 const formBtn = document.getElementById("form");
 const audio = document.querySelector("audio");
 const highScoreView = document.getElementById("highScore");
-
-const randomPokemonNumbers = [];
-
 const startTime = oGameData.beginning;
 const endTime = oGameData.ending;
 const totalTime = oGameData.nmbrOfMilliseconds();
+const highScoreRef = document.querySelector("#highscoreList");
 
-// Validering av formulär, age, gender, name
-// Om validering misslyckas, meddela och visa vart det gick fel.
 
-// document.body.style.backgroundImage = "url(./assets/arena-background.png)";
+// Background image
+
+document.body.style.backgroundImage = "url(./assets/background.png)";
+highScoreView.classList.add("hidden")
 
 formBtn.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -56,9 +54,11 @@ function startGame(event) {
     audio.volume = 0.005;
     audio.play();
     oGameData.startTimeInMilliseconds();
-    generatePokemon();
     formBtn.classList.add("hidden");
     highScoreView.classList.add("hidden");
+    document.body.style.backgroundImage = "url(./assets/arena-background.png)";
+    generatePokemon();
+
   }
 }
 
@@ -85,11 +85,12 @@ function getRandomPokemonNum() {
 //Skapar ett pokemon element som en img tag
 
 function createPokemonElement(pokemonNumber) {
-  const pokemon = document.createElement("img");
-  pokemon.src = `./assets/pokemons/${pokemonNumber}.png`;
-  pokemon.style.position = "absolute";
-  pokemon.classList.add("individualPokemon");
-  return pokemon;
+    const pokemon = document.createElement("img");
+    
+    pokemon.src = `./assets/pokemons/${pokemonNumber}.png`;
+    pokemon.style.position = "absolute";
+    pokemon.classList.add("individualPokemon");
+    return pokemon;
 }
 
 // Slumpa fram en random position var 3 sekunder, och ge varje individuell pokemon en egen position.
@@ -130,7 +131,7 @@ function generatePokemon() {
         // Kolla om alla Pokémon är fångade
 
         if (oGameData.nmbrOfCaughtPokemons === 10) {
-          log(`Caught all ${oGameData.nmbrOfCaughtPokemons} pokemons!`);
+          pokemon.classList.remove('caught')
           stopGame(); // Avsluta spelet
         }
       } else if (pokemon.classList.contains("caught")) {
@@ -145,11 +146,14 @@ function generatePokemon() {
 let pokemonNumbers = oGameData.pokemonNumbers;
 
 function stopGame() {
-  oGameData.endTime = oGameData.endTimeInMilliseconds();
+  oGameData.endTimeInMilliseconds();
   let totalTime = oGameData.nmbrOfMilliseconds();
   let pokemonList = document.querySelectorAll("img");
-  log(pokemonList);
   pokemonList.forEach((pokemon) => (pokemon.classList = "hidden"));
+  audio.pause()
+  audio.currentTime = 0;
+  oGameData.trainerName = playerName.value
+  
 
   let player = {
     name: oGameData.trainerName,
@@ -158,15 +162,10 @@ function stopGame() {
   const highScore = JSON.parse(localStorage.getItem("highScore")) || [];
   if (!localStorage.getItem("highScore")) {
     localStorage.setItem("highScore", JSON.stringify(highScore));
-    log("Array stored in LS");
-  } else {
-    log("Array already exists in LS");
-  }
-
+  } 
   if (typeof totalTime === "number") {
     if (highScore.length === 0) {
       highScore.push(player);
-      log("First score added:", player);
     } else {
       let inserted = false;
       for (let i = 0; i < highScore.length; i++) {
@@ -183,11 +182,9 @@ function stopGame() {
     }
     localStorage.setItem("highScore", JSON.stringify(highScore));
 
-    log("Updated LocalStorage:", player);
+
     displayHighScore();
-  } else {
-    log("TotalTime is not a number");
-  }
+  } 
 }
 
 // Visa HighScore-vyn och ha en knapp som anropar init()
@@ -198,24 +195,37 @@ function displayHighScore() {
     localStorage.setItem("highScore", "[]");
   }
 
-  oGameData.init();
-
   let highScore = JSON.parse(localStorage.getItem("highScore"));
   let totalTime = oGameData.nmbrOfMilliseconds();
   let timeInSec = totalTime / 1000;
 
-  for (let i = 0; i < 10; i++) {
-    log(highScore[i]);
-  }
   highScoreView.classList.remove("hidden");
   let winMsgRef = document.querySelector("#winMsg");
   winMsgRef.textContent = `Good job ${oGameData.trainerName}, you caught all pokemons in ${timeInSec} seconds!`;
 
-  let highScoreRef = document.querySelector("#highscoreList");
-  highScoreRef.textContent = "";
-  highScore.forEach(() => {
-    let highScoreLi = document.createElement("li");
-    let textStr = `Player: ${oGameData.trainerName}, Time: ${timeInSec}s`;
-    highScoreLi.textContent = textStr;
-  });
+  
+  for (let i = 0; i < highScore.length; i++) {
+    if(i < 10) {
+      let timeInSec = highScore[i].time / 1000
+      let individualPlayer = document.createElement("li");
+      individualPlayer.textContent = `${highScore[i].name} finished the game in ${timeInSec} seconds`
+      highScoreRef.appendChild(individualPlayer); 
+    }  else{
+      break
+    }
+  }
 }
+
+// Startar om spelet
+
+playAgainBtn.addEventListener('click', () =>  {
+  let images = document.querySelectorAll("img")
+  images.forEach((element) => element.classList.remove("caught"))
+  formBtn.classList.remove("hidden")
+  highScoreView.classList.add("hidden")
+  oGameData.init();
+  highScoreRef.innerText = ""
+  document.body.style.backgroundImage = "url(./assets/background.png)";
+})
+
+
