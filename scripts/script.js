@@ -2,12 +2,12 @@ const log = (msg) => console.log(msg);
 
 setUpGame();
 
+// Vi sätter bakgrundsbilden och lägger till eventlistener
 function setUpGame() {
   document.body.style.backgroundImage = 'url(./assets/background.png)';
   // Klassen d-none finns redan i html, om vi vill ta bort dessa rader kod kan vi byta ut klassnamnet hidden mot d-none
   oGameData.highScoreView = document.getElementById('highScore');
   oGameData.highScoreView.classList.add('hidden');
-
   oGameData.formBtn = document.getElementById('form');
   oGameData.formBtn.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -15,8 +15,7 @@ function setUpGame() {
   });
 }
 
-// Background image
-
+// Validerar formet - retunerar true om alla parametrar uppnås
 function validateForm() {
   oGameData.trainerName = document.getElementById('nick');
   oGameData.trainerAge = document.getElementById('age');
@@ -43,7 +42,6 @@ function validateForm() {
       playerGirl.classList.add('red-border');
       throw { message: 'Gender wrong', target: playerBoy, playerGirl };
     }
-    oGameData.trainerName = oGameData.trainerName.value;
     return true;
   } catch (error) {
     console.log(error.message);
@@ -52,7 +50,9 @@ function validateForm() {
   }
 }
 
-function startGame(event) {
+
+// Om valideringen lyckas => Startar musiken, timern, byter bakgrund, och börjar generera pokemons
+function startGame() {
   if (validateForm()) {
     oGameData.audio = document.querySelector('audio');
     oGameData.audio.volume = 0.005;
@@ -65,14 +65,44 @@ function startGame(event) {
   }
 }
 
-// Vid lyckad validering, Starta musik som börjar vid spel start, starta även timer
+// tar in de 10 slumpade numren och gör bilder av dem, och när man hovrar så ändras det till pokeball, vid 10 st fångde stoppar vi spelet
+function generatePokemon() {
+  const gameField = document.getElementById('gameField');
+  
+  oGameData.pokemonNumbers = getRandomPokemonNum();
 
+  for (const pokemonNumber of oGameData.pokemonNumbers) {
+    const pokemon = createPokemonElement(pokemonNumber);
+    gameField.appendChild(pokemon);
+    updatePokemonPosition(pokemon);
+    startPokemonMovement(pokemon);
+
+    pokemon.addEventListener('mouseover', () => {
+      if (!pokemon.classList.contains('caught')) {
+        pokemon.dataset.originalSrc = pokemon.src; 
+        pokemon.src = './assets/ball.webp';
+        pokemon.classList.add('caught');
+        oGameData.nmbrOfCaughtPokemons++; 
+
+        if (oGameData.nmbrOfCaughtPokemons === 10) {
+          stopGame();
+        }
+        
+      } else if (pokemon.classList.contains('caught')) {
+        pokemon.src = pokemon.dataset.originalSrc;
+        pokemon.classList.remove('caught');
+        oGameData.nmbrOfCaughtPokemons--;
+      }
+    });
+  }
+}
+
+// Returnerar en lista med 10 random nummer mellan 1 och 151
 function getRandomPokemonNum() {
   const tenPokemonNumbers = [];
 
   while (tenPokemonNumbers.length < 10) {
     let randomNumber = Math.floor(Math.random() * 151) + 1;
-
     randomNumber = randomNumber.toString();
     if (randomNumber.length === 1) {
       randomNumber = '00' + randomNumber;
@@ -85,8 +115,7 @@ function getRandomPokemonNum() {
   return tenPokemonNumbers;
 }
 
-//Skapar ett pokemon element som en img tag
-
+// Vi skapar en pokemon med en bild beroende på numret och returnerar den 
 function createPokemonElement(pokemonNumber) {
   const pokemon = document.createElement('img');
 
@@ -96,56 +125,21 @@ function createPokemonElement(pokemonNumber) {
   return pokemon;
 }
 
-// Slumpa fram en random position var 3 sekunder, och ge varje individuell pokemon en egen position.
-
+// Slumpa fram en random position var 3 sekunder, och ge varje individuell pokemon en egen position
 function updatePokemonPosition(pokemon) {
   pokemon.style.left = `${oGameData.getLeftPosition()}px`;
   pokemon.style.top = `${oGameData.getTopPosition()}px`;
 }
 
-// Sätter timer på rörelsen
-
+// Kör updatePokemonPosition() var tredje sekund
 function startPokemonMovement(pokemon) {
-  const intervalId = setInterval(() => {
+  setInterval(() => {
     updatePokemonPosition(pokemon);
   }, 3000);
-  return intervalId;
 }
 
-function generatePokemon() {
-  const gameField = document.getElementById('gameField');
-  
-  oGameData.pokemonNumbers = getRandomPokemonNum();
-
-  for (const pokemonNumber of oGameData.pokemonNumbers) {
-    const pokemon = createPokemonElement(pokemonNumber);
-    gameField.appendChild(pokemon);
-    updatePokemonPosition(pokemon);
-    startPokemonMovement(pokemon);
-
-    // Hover-event: Byt till pokéboll, markera som fångad och stoppa rörelsen
-    pokemon.addEventListener('mouseover', () => {
-      if (!pokemon.classList.contains('caught')) {
-        pokemon.dataset.originalSrc = pokemon.src; // Spara originalbilden
-        pokemon.src = './assets/ball.webp'; // Byt till pokéboll
-        pokemon.classList.add('caught'); // Markera som fångad
-        oGameData.nmbrOfCaughtPokemons++; // Räkna fångade Pokémon
-
-        // Kolla om alla Pokémon är fångade
-
-        if (oGameData.nmbrOfCaughtPokemons === 10) {
-          pokemon.classList.remove('caught');
-          stopGame(); // Avsluta spelet
-        }
-      } else if (pokemon.classList.contains('caught')) {
-        pokemon.src = pokemon.dataset.originalSrc;
-        pokemon.classList.remove('caught');
-        oGameData.nmbrOfCaughtPokemons--;
-      }
-    });
-  }
-}
-
+// Tiden stoppas och vi räknar ut totala tiden, vi döljer alla bilder, stoppar ljudet och återställer det
+// Vi skapar ett objekt för spelaren,
 function stopGame() {
   oGameData.endTimeInMilliseconds();
   oGameData.totalTime = oGameData.nmbrOfMilliseconds();
@@ -158,6 +152,7 @@ function stopGame() {
     name: oGameData.trainerName.value,
     time: oGameData.totalTime,
   };
+
   const highScore = JSON.parse(localStorage.getItem('highScore')) || [];
   if (!localStorage.getItem('highScore')) {
     localStorage.setItem('highScore', JSON.stringify(highScore));
@@ -184,15 +179,18 @@ function stopGame() {
   }
 }
 
-// Visa HighScore-vyn och ha en knapp som anropar init()
+// Visar highscore-sektionen, skapar upp li-element för de 10 bästa resultaten
+// Lägger till eventlistener på spela-igen-knappen, återställer spelet
+
 function displayHighScore(highScoresList) {
   document.querySelector('#highScore').classList.remove('hidden');
 
   let timeInSec = oGameData.totalTime / 1000;
   oGameData.highScoresRef = document.querySelector('#highscoreList');
   let winMsgRef = document.querySelector('#winMsg');
-  winMsgRef.textContent = `Good job ${oGameData.trainerName}, you caught all pokemons in ${timeInSec} seconds!`;
+  winMsgRef.textContent = `Player: ${oGameData.trainerName.value}, Time: ${timeInSec} s`;
 
+  highScoresList.forEach(() =>  {})
   for (let i = 0; i < highScoresList.length; i++) {
     if (i < 10) {
       let timeInSec = highScoresList[i].time / 1000;
@@ -201,9 +199,10 @@ function displayHighScore(highScoresList) {
       oGameData.highScoresRef.appendChild(individualPlayer);
     } 
   }
+
   document.getElementById('playAgainBtn').addEventListener('click', () => {
     let images = document.querySelectorAll('img');
-    images.forEach((element) => element.classList.remove('caught'));
+    images.forEach((image) => image.classList.remove('caught'));
     oGameData.formBtn.classList.remove('hidden');
     oGameData.highScoreView.classList.add('hidden');
     oGameData.init();
@@ -212,6 +211,5 @@ function displayHighScore(highScoresList) {
   });
 }
 
-// Startar om spelet
 
 
