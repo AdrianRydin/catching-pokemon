@@ -26,25 +26,26 @@ function validateForm() {
   // Vi behöver få upp detta på skärmen och skapa mer detaljerade felmeddelanden om exakt vad som gick fel
   try {
     if (
-      oGameData.trainerName.value.length < 5 ||
-      oGameData.trainerName.value.length > 10
-    ) {
-      throw { message: 'Name wrong', target: oGameData.trainerName };
-    } else if (isNaN(oGameData.trainerAge.value)) {
+      oGameData.trainerName.value.length < 5) {
+      throw { message: 'Nickname must be at least 5 characters', target: oGameData.trainerName };
+    } else if( oGameData.trainerName.value.length > 10) {
+      throw { message: "Nickname can't be longer than 15 characters", target: oGameData.trainerName };
+    } else if (isNaN(oGameData.trainerAge.value) || oGameData.trainerAge.value === '') {
       throw { message: 'Age must be a number', target: oGameData.trainerAge };
     } else if (
-      oGameData.trainerAge.value < 10 ||
-      oGameData.trainerAge.value > 15
-    ) {
-      throw { message: 'Age wrong', target: oGameData.trainerAge };
+      oGameData.trainerAge.value < 10) {
+      throw { message: 'Trainer must be at least 10 years old', target: oGameData.trainerAge };
+    } else if(oGameData.trainerAge.value > 15)  {
+      throw { message: "Trainer can't be older than 15 years", target: oGameData.trainerAge };
     } else if (playerBoy.checked === false && playerGirl.checked === false) {
-      playerBoy.classList.add('red-border');
-      playerGirl.classList.add('red-border');
-      throw { message: 'Gender wrong', target: playerBoy, playerGirl };
+      // playerBoy.classList.add('red-border');
+      // playerGirl.classList.add('red-border');
+      throw { message: 'You must select a gender', target: playerBoy};
     }
     return true;
   } catch (error) {
     console.log(error.message);
+    document.querySelector('#errorMsg').textContent = error.message;
     error.target.focus();
     return false;
   }
@@ -195,7 +196,7 @@ function displayHighScore(highScoresList) {
     if (i < 10) {
       let timeInSec = highScoresList[i].time / 1000;
       let individualPlayer = document.createElement('li');
-      individualPlayer.textContent = `${highScoresList[i].name} finished the game in ${timeInSec} seconds`;
+      individualPlayer.textContent = `Player: ${highScoresList[i].name}, Time: ${timeInSec} seconds`;
       oGameData.highScoresRef.appendChild(individualPlayer);
     } 
   }
