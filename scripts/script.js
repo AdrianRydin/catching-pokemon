@@ -23,7 +23,6 @@ function validateForm() {
   const playerBoy = document.getElementById('boy');
   const playerGirl = document.getElementById('girl');
 
-  // Vi behöver få upp detta på skärmen och skapa mer detaljerade felmeddelanden om exakt vad som gick fel
   try {
     if (
       oGameData.trainerName.value.length < 5) {
@@ -44,7 +43,6 @@ function validateForm() {
     }
     return true;
   } catch (error) {
-    console.log(error.message);
     document.querySelector('#errorMsg').textContent = error.message;
     error.target.focus();
     return false;
