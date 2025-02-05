@@ -54,7 +54,7 @@ function validateForm() {
 function startGame() {
   if (validateForm()) {
     oGameData.audio = document.querySelector('audio');
-    oGameData.audio.volume = 0.005;
+    oGameData.audio.volume = 0.05;
     oGameData.audio.play();
     oGameData.startTimeInMilliseconds();
     oGameData.formBtn.classList.add('hidden');
