@@ -29,6 +29,10 @@ body {
   border: 1px solid red;
 }
 
+.section-base__error {
+  color: rgb(221, 9, 9);
+}
+
 .form-wrapper {
   width: 30%;
   min-width: fit-content;
