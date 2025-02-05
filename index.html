@@ -14,31 +14,34 @@
      <article class="container">
 
       <section class="form-wrapper" id="formWrapper">
-        <form class="form" id="form">
-          <h1 id="welcomeText">Welcome young pokemon trainer</h1>
-          <h3>Please enter your name</h2>
-          <input id="nick" type="text" placeholder="Trainer nickname" />
-          <input id="age" type="text" placeholder="Trainer age">
-          <p>Are you a boy? Or are you a girl?</p>
-          <label>
-            <input type="radio" name="gender" id="boy">
-            Boy
-          </label>
-          <label>
-            <input type="radio" name="gender" id="girl">
-            Girl
-          </label>
-          <button id="submitBtn">Let's catch some pokemons!</button>
+        <form class="section-base " id="form">
+          <h1 class="section-base__welcome-text" id="welcomeText">Welcome young pokemon trainer</h1>
+            <h3 class="text text--margin text--bold">Please enter your name</h2>
+              <input class="input" id="nick" type="text" placeholder="Trainer nickname" />
+              <h3 class="text text--margin text--bold">Please enter your age</h2>
+              <input class="input" id="age" type="text" placeholder="Trainer age">
+          <p class="text text--margin text--bold">Are you a boy? Or are you a girl?</p>
+          <div class="section-base__radio-wrapper">
+            <label>
+              <input type="radio" name="gender" id="boy">
+              Boy
+            </label>
+            <label>
+              <input type="radio" name="gender" id="girl">
+              Girl
+            </label>
+          </div>
+          <button class="input input--red-btn" id="submitBtn">Let's catch some pokemons!</button>
         </form>
       </section>
-      <section id="gameField" class="game-field d-none">
-          <section class="high-score d-none" id="highScore">
-              <h1>Congratulations!</h1>
-              <h3 id="winMsg"></h3>
-              <ol class="highscore-list" id="highscoreList">
-  
+      <section id="gameField" class=" game-field-wrapper d-none">
+          <section class="section-base d-none" id="highScore">
+              <h1 class="text">Congratulations!</h1>
+              <h3 class="text text text--margin" id="winMsg"></h3>
+              <ol class="section-base__highscore-list" id="highscoreList">
+                
               </ol>
-              <button id="playAgainBtn">Play again?</button>
+              <button class="input input--red-btn" id="playAgainBtn">Play again?</button>
           </section>
       </section>
      </article>
