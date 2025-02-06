@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles/style.css" />
+    <link rel="icon" type="image" href="/assets/ball.webp">
+    <script src="./scripts/oGameData.js"></script>
+    <script type="module" src="./scripts/script.js"></script>
+    <title>Gotta catch 'em all</title>
+  </head>
+  <body>
+    <!-- Detta är koden från mitt exempel, skriv gärna egen HTML om så önskas -->
+     <article class="container">
+
+      <section class="form-wrapper" id="formWrapper">
+        <form class="section-base " id="form">
+          <h1 class="section-base__welcome-text" id="welcomeText">Welcome young pokemon trainer</h1>
+          <p class="section-base__error" id="errorMsg"></p>
+            <h3 class="text text--margin text--bold">Please enter your name</h2>
+              <input class="input" id="nick" type="text" placeholder="Trainer nickname" />
+              <h3 class="text text--margin text--bold">Please enter your age</h2>
+              <input class="input" id="age" type="text" placeholder="Trainer age">
+          <p class="text text--margin text--bold">Are you a boy? Or are you a girl?</p>
+          <div class="section-base__radio-wrapper">
+            <label>
+              <input type="radio" name="gender" id="boy">
+              Boy
+            </label>
+            <label>
+              <input type="radio" name="gender" id="girl">
+              Girl
+            </label>
+          </div>
+          <button class="input input--red-btn" id="submitBtn">Let's catch some pokemons!</button>
+        </form>
+      </section>
+      <section id="gameField" class=" game-field-wrapper d-none">
+          <section class="section-base d-none" id="highScore">
+              <h1 class="text">Congratulations!</h1>
+              <h3 class="text text text--margin" id="winMsg"></h3>
+              <ol class="section-base__highscore-list" id="highscoreList">
+                
+              </ol>
+              <button class="input input--red-btn" id="playAgainBtn">Play again?</button>
+          </section>
+      </section>
+     </article>
+    
+    
+    <!-- Läs in audioelementet från DOMen. För att spela .play(), för att pausa .pause(), för att starta om .load()  -->
+    <audio src="./assets/pokemon_vs_trainer.mp3" id="pokemonMusic"></audio>
+  </body>
+</html>
